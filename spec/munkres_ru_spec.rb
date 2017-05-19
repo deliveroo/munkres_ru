@@ -5,7 +5,10 @@ describe MunkresRu do
     expect(MunkresRu::VERSION).not_to be nil
   end
 
-  it 'does something useful' do
-    expect(MunkresRu.double_input(2)).to eq(4)
+  it 'solves a problem' do
+    array = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+    res = MunkresRu.solve(array)
+    expect(res).to be_a(Hash)
+    puts res.inspect
   end
 end
