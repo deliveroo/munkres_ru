@@ -1,0 +1,10 @@
+[package]
+name = "munkres_ru"
+version = "0.1.0"
+authors = ["Ivan Pirlik <ivan.pirlik@deliveroo.co.uk>"]
+
+[lib]
+crate-type = ["dylib"]
+
+[dependencies]
+munkres = "0.3.0"
