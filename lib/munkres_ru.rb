@@ -29,10 +29,10 @@ module MunkresRu
     offset = 0
 
     pointer = FFI::MemoryPointer.new :double, flattened.size
+    pointer.autorelease = false
 
     pointer.put_array_of_double offset, flattened
 
     Hash[MunkresRu.solve_munkres(n, pointer).to_a.each_slice(2).to_a]
-
   end
 end
