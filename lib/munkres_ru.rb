@@ -13,8 +13,8 @@ module MunkresRu
   ffi_lib "#{File.dirname(__FILE__)}/../rust/target/release/libmunkres_ru.#{EXT}"
 
   class ResultArray < FFI::Struct
-    layout :len,    :size_t, # dynamic array layout
-           :data,   :pointer #
+    layout :len,    :size_t,
+           :data,   :pointer
 
     def to_a
       self[:data].get_array_of_int(0, self[:len]).compact
@@ -24,15 +24,10 @@ module MunkresRu
   attach_function :solve_munkres, [:int, :pointer], ResultArray.by_value
 
   def self.solve(array)
-    n = array.size
     flattened = array.flatten
-    offset = 0
-
     pointer = FFI::MemoryPointer.new :double, flattened.size
-    pointer.autorelease = false
-
-    pointer.put_array_of_double offset, flattened
-
-    Hash[MunkresRu.solve_munkres(n, pointer).to_a.each_slice(2).to_a]
+    pointer.autorelease = false # Rust will take ownership of that memory
+    pointer.put_array_of_double 0, flattened
+    MunkresRu.solve_munkres(array.size, pointer).to_a.each_slice(2).to_a
   end
 end

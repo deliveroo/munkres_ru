@@ -27,10 +27,10 @@ pub extern fn solve_munkres(n: i64, array: *mut f64) -> Array {
     let vec = unsafe { Vec::from_raw_parts(array, len, len) };
     let mut weights: WeightMatrix<f64> = WeightMatrix::from_row_vec(size, vec);
     let matching = solve_assignment(&mut weights);
-    let mut vec = Vec::new();
+    let mut res = Vec::new();
     for &(row, col) in &matching[..] {
-        vec.push(row as i32);
-        vec.push(col as i32);
+        res.push(row as i32);
+        res.push(col as i32);
     }
-    Array::from_vec(vec)
+    Array::from_vec(res)
 }
