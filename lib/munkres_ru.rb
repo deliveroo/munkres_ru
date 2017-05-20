@@ -21,7 +21,7 @@ module MunkresRu
     end
   end
 
-  attach_function :solve_munkres, [:int, :pointer], ResultArray.by_value
+  attach_function :solve_munkres, [:size_t, :pointer], ResultArray.by_value
 
   def self.solve(array)
     flattened = array.flatten
