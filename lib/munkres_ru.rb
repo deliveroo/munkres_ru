@@ -11,5 +11,23 @@ end
 module MunkresRu
   extend FFI::Library
   ffi_lib "#{File.dirname(__FILE__)}/../rust/target/release/libmunkres_ru.#{EXT}"
-  attach_function :double_input, [ :int ], :int
+
+  class ResultArray < FFI::Struct
+    layout :len,    :size_t,
+           :data,   :pointer
+
+    def to_a
+      self[:data].get_array_of_int(0, self[:len]).compact
+    end
+  end
+
+  attach_function :solve_munkres, [:size_t, :pointer], ResultArray.by_value
+
+  def self.solve(array)
+    flattened = array.flatten
+    pointer = FFI::MemoryPointer.new :double, flattened.size
+    pointer.autorelease = false # Rust will take ownership of that memory
+    pointer.put_array_of_double 0, flattened
+    MunkresRu.solve_munkres(array.size, pointer).to_a.each_slice(2).to_a
+  end
 end

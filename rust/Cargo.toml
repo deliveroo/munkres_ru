@@ -7,4 +7,5 @@ authors = ["Ivan Pirlik <ivan.pirlik@deliveroo.co.uk>"]
 crate-type = ["dylib"]
 
 [dependencies]
+libc = "0.2"
 munkres = "0.3.0"

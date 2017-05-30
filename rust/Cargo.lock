@@ -2,12 +2,18 @@
 name = "munkres_ru"
 version = "0.1.0"
 dependencies = [
+ "libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)",
  "munkres 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "fixedbitset"
 version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libc"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -20,4 +26,5 @@ dependencies = [
 
 [metadata]
 "checksum fixedbitset 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "fcf4412e2d11115c5ed81c2fbdaba8028de0c92553497aa771fc5f4e0c5c8793"
+"checksum libc 0.2.23 (registry+https://github.com/rust-lang/crates.io-index)" = "e7eb6b826bfc1fdea7935d46556250d1799b7fe2d9f7951071f4291710665e3e"
 "checksum munkres 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "84ca023813adf830e2537250f471f9928ff581527fe87d08a641f68b1b46c3e7"
