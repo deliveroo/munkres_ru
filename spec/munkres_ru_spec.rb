@@ -66,6 +66,6 @@ describe MunkresRu do
     ]
     expect {
       MunkresRu.solve(problem)
-    }.to raise_error('Solving Munkres problem failed, check input is valid')
+    }.to raise_error('Solving Munkres problem failed, check if input is valid')
   end
 end

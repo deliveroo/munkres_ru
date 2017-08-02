@@ -30,7 +30,7 @@ module MunkresRu
     pointer.put_array_of_double 0, flattened
     solved = MunkresRu.solve_munkres(array.size, pointer).to_a
     if solved.include?(-1)
-      raise 'Solving Munkres problem failed, check input is valid'
+      raise 'Solving Munkres problem failed, check if input is valid'
     end
     solved.each_slice(2).to_a
   end
