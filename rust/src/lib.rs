@@ -22,15 +22,30 @@ impl Array {
 
 #[no_mangle]
 pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> Array {
-    let size = n as usize;
-    let len = size*size;
-    let vec = unsafe { Vec::from_raw_parts(array, len, len) };
-    let mut weights: WeightMatrix<libc::c_double> = WeightMatrix::from_row_vec(size, vec);
-    let matching = solve_assignment(&mut weights);
-    let mut res = Vec::new();
-    for &(row, col) in &matching[..] {
-        res.push(row as libc::c_int);
-        res.push(col as libc::c_int);
+    let res = ::std::panic::catch_unwind(|| {
+        let size = n as usize;
+        let len = size*size;
+        let vec = unsafe { Vec::from_raw_parts(array, len, len) };
+        for &v in &vec {
+            assert!(!v.is_nan());
+        }
+        let mut weights: WeightMatrix<libc::c_double> = WeightMatrix::from_row_vec(size, vec);
+        let matching = solve_assignment(&mut weights);
+        let mut res = Vec::new();
+        for &(row, col) in &matching[..] {
+            res.push(row as libc::c_int);
+            res.push(col as libc::c_int);
+        }
+        Array::from_vec(res)
+    });
+    match res {
+        Ok(array) => array,
+        Err(_) => {
+            let mut err_res = Vec::new();
+            for _ in 0..n {
+                err_res.push(-1 as libc::c_int);
+            }
+            Array::from_vec(err_res)
+        }
     }
-    Array::from_vec(res)
 }

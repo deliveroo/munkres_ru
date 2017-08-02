@@ -55,4 +55,17 @@ describe MunkresRu do
     solution = MunkresRu.solve(problem)
     expect(compute_cost(problem, solution)).to eq(3.0)
   end
+
+  it 'raises exception on NaN' do
+    problem = [
+      [Float::NAN, 1.0, 1.0, 1.0, 1.0],
+      [1.0, Float::NAN, 1.0, 1.0, 1.0],
+      [1.0, 1.0, Float::NAN, 1.0, 1.0],
+      [0.0, 0.0, 0.0, Float::INFINITY, 0.0],
+      [0.0, 0.0, 0.0, 0.0, Float::INFINITY]
+    ]
+    expect {
+      MunkresRu.solve(problem)
+    }.to raise_error('Solving Munkres problem failed, check input is valid')
+  end
 end
