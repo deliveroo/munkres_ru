@@ -40,12 +40,6 @@ pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> Arra
     });
     match res {
         Ok(array) => array,
-        Err(_) => {
-            let mut err_res = Vec::new();
-            for _ in 0..n {
-                err_res.push(-1 as libc::c_int);
-            }
-            Array::from_vec(err_res)
-        }
+        Err(_) => Array::from_vec(vec![-1]),
     }
 }
