@@ -28,6 +28,10 @@ module MunkresRu
     pointer = FFI::MemoryPointer.new :double, flattened.size
     pointer.autorelease = false # Rust will take ownership of that memory
     pointer.put_array_of_double 0, flattened
-    MunkresRu.solve_munkres(array.size, pointer).to_a.each_slice(2).to_a
+    solved = MunkresRu.solve_munkres(array.size, pointer).to_a
+    if solved == [-1]
+      raise 'Solving Munkres problem failed, check if input is valid'
+    end
+    solved.each_slice(2).to_a
   end
 end
