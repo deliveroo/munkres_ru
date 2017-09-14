@@ -11,7 +11,7 @@ pub struct Array {
 }
 
 impl Array {
-    fn from_vec<T>(mut vec: Vec<T>) -> Array {
+    fn from_vec(mut vec: Vec<i32>) -> Array {
         vec.shrink_to_fit();
         let array = Array { data: vec.as_ptr() as *const libc::c_int, len: vec.len() as libc::size_t };
         std::mem::forget(vec);
@@ -19,9 +19,15 @@ impl Array {
     }
 }
 
+impl Drop for Array {
+    fn drop(&mut self) {
+        unsafe { Vec::from_raw_parts(self.data as *mut i32, self.len, self.len) as Vec<i32> };
+    }
+}
+
 
 #[no_mangle]
-pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> Array {
+pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> *mut Array {
     let res = ::std::panic::catch_unwind(|| {
         let size = n as usize;
         let len = size*size;
@@ -36,10 +42,19 @@ pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> Arra
             res.push(row as libc::c_int);
             res.push(col as libc::c_int);
         }
-        Array::from_vec(res)
+        Box::new(Array::from_vec(res))
     });
     match res {
-        Ok(array) => array,
-        Err(_) => Array::from_vec(vec![-1]),
+        Ok(array) => {
+            Box::into_raw(array)
+        },
+        Err(_) => 0 as *mut Array,
     }
+}
+
+#[no_mangle]
+pub extern fn free_munkres(array: *mut Array) {
+    let _res = ::std::panic::catch_unwind(|| {
+        unsafe { Box::from_raw(array) };
+    });
 }
