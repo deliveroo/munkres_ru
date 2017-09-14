@@ -48,7 +48,7 @@ pub extern fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> *mut
         Ok(array) => {
             Box::into_raw(array)
         },
-        Err(_) => 0 as *mut Array,
+        Err(_) => std::ptr::null_mut(),
     }
 }
 
