@@ -5,6 +5,7 @@ use munkres::WeightMatrix;
 use munkres::solve_assignment;
 
 use libc::{c_int, size_t};
+use std::ptr;
 
 #[repr(C)]
 pub struct Array {
@@ -32,15 +33,15 @@ impl Drop for Array {
 
 
 #[no_mangle]
-pub extern "C" fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> *mut Array {
+pub extern "C" fn solve_munkres(n: libc::size_t, array: *const libc::c_double) -> *mut Array {
     let res = ::std::panic::catch_unwind(|| {
         let size = n as usize;
         let len = size * size;
-        let vec = unsafe { Vec::from_raw_parts(array, len, len) };
-        for v in &vec {
+        let slice = unsafe { std::slice::from_raw_parts(array, len) };
+        for v in slice {
             assert!(!v.is_nan());
         }
-        let mut weights: WeightMatrix<libc::c_double> = WeightMatrix::from_row_vec(size, vec);
+        let mut weights: WeightMatrix<libc::c_double> = WeightMatrix::from_row_vec(size, slice.to_vec());
         let matching = solve_assignment(&mut weights);
         let mut res = Vec::new();
         for (row, col) in matching {
@@ -51,7 +52,7 @@ pub extern "C" fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> 
     });
     match res {
         Ok(array) => Box::into_raw(array),
-        Err(_) => std::ptr::null_mut(),
+        Err(_) => ptr::null_mut(),
     }
 }
 
@@ -59,3 +60,21 @@ pub extern "C" fn solve_munkres(n: libc::size_t, array: *mut libc::c_double) -> 
 pub extern "C" fn free_munkres(array: *mut Array) {
     let _res = ::std::panic::catch_unwind(|| { unsafe { Box::from_raw(array) }; });
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use test::Bencher;
+
+//     #[bench]
+//     fn solve_munkres1_bench(b: &mut Bencher) {
+//         let problem = &[
+//             1.0, 1.0, 1.0, 1.0, 1.0,
+//             1.0, 1.0, 1.0, 1.0, 1.0,
+//             1.0, 1.0, 1.0, 1.0, 1.0,
+//             0.0, 0.0, 0.0, 0.0, 0.0,
+//             0.0, 0.0, 0.0, 0.0, 0.0
+//         ];
+//         b.iter(|| solve_munkres(5, problem.as_ptr()));
+//     }
+// }
